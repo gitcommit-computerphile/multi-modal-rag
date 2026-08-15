@@ -1,5 +1,11 @@
 # Multimodal Document RAG
 
+
+
+https://github.com/user-attachments/assets/bbf21c4b-71e5-4ba4-9096-0a148851cbbe
+
+
+
 A RAG pipeline for PDFs with real tables and charts in them (financial reports mainly). Instead of OCR'ing everything into a soup of text, it detects layout per page, one chunk per region (text/table/figure), and hands tables and charts to a vision model. Page images are kept around too, so at answer time the model can actually look at the chart instead of trusting a text transcription of it.
 
 ## How it works
