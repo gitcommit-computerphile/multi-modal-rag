@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
@@ -5,10 +7,23 @@ from config import get_settings
 from db.models import Base
 
 
+@lru_cache(maxsize=1)
 def get_engine():
+    """Process-wide engine. Cached because each engine owns a connection pool —
+    building one per request means a fresh TCP connect + auth handshake every time."""
     settings = get_settings()
-    engine = create_engine(settings.database_url, echo=False)
-    return engine
+    return create_engine(
+        settings.database_url,
+        echo=False,
+        pool_pre_ping=True,
+        pool_size=5,
+        max_overflow=10,
+    )
+
+
+@lru_cache(maxsize=1)
+def _get_sessionmaker():
+    return sessionmaker(bind=get_engine())
 
 
 def init_db():
@@ -20,7 +35,5 @@ def init_db():
 
 
 def get_session():
-    """Get a new DB session."""
-    engine = get_engine()
-    SessionLocal = sessionmaker(bind=engine)
-    return SessionLocal()
+    """Get a new DB session from the shared pool."""
+    return _get_sessionmaker()()

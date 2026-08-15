@@ -16,7 +16,16 @@ class DocumentStatusResponse(BaseModel):
     page_count: int | None
     pages_done: int
     pages_total: int | None
+    current_step: str | None
     error_message: str | None
+
+
+class DocumentListItem(BaseModel):
+    id: str
+    filename: str
+    status: str
+    page_count: int | None
+    uploaded_at: datetime
 
 
 class QueryRequest(BaseModel):
